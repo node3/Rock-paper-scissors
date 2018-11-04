@@ -128,14 +128,31 @@ def saveImages(images, gestureName, targetDir):
         cv2.imwrite(os.path.join(targetDirFullPath, gestureName+'_'+str(imageId)+'.jpg'), img)
 
 
+
 def getImageList(imageSourceFolder):
     onlyfiles = [ f for f in os.listdir(imageSourceFolder) if os.path.isfile(os.path.join(imageSourceFolder,f)) ]
     images = np.empty(len(onlyfiles), dtype=object)
     for n in range(0, len(onlyfiles)):
         images[n] = cv2.imread( os.path.join(imageSourceFolder, onlyfiles[n]) )
-
     return images
 
+def getLabel(filename):
+
+    if 'rock' in filename:
+        label = ROCK
+    elif 'paper' in filename:
+        label = PAPER
+    else:
+        label = SCISSOR
+    return label
+
+
+def getImageLabels(imageFolder):
+    onlyfiles = [ f for f in os.listdir(imageFolder) if os.path.isfile(os.path.join(imageFolder,f)) ]
+    y_true = np.empty(len(onlyfiles), dtype=int)
+    for n in range(0, len(onlyfiles)):
+        y_true[n] = getLabel(onlyfiles[n])
+    return y_true
 
 # import the necessary packages
 import argparse
@@ -143,6 +160,9 @@ import cv2
 import numpy as np
 import os
 
+ROCK=1
+PAPER=2
+SCISSOR=3
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--imageDir", required=True, help="Path to input image directory")
@@ -153,3 +173,5 @@ for image in srcImages:
     transformedImage = transformImage(image, 300)
     images = augmentImage(transformedImage)
     saveImages(images, 'rock', 'img_dest')
+
+imageLabels = getImageLabels('img_dest')

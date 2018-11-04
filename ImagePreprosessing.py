@@ -154,11 +154,20 @@ def getImageLabels(imageFolder):
         y_true[n] = getLabel(onlyfiles[n])
     return y_true
 
+
+def extractHOG(image, hogDescriptorPath):
+    fd, hog_image = hog(image, orientations=8, pixels_per_cell=(8, 8), cells_per_block=(1, 1), block_norm='L1', visualize=True)
+    cv2.imshow('img', hog_image)
+    cv2.waitKey(0)
+
+
+
 # import the necessary packages
 import argparse
 import cv2
 import numpy as np
 import os
+from skimage.feature import hog
 
 ROCK=1
 PAPER=2
@@ -175,3 +184,10 @@ for image in srcImages:
     saveImages(images, 'rock', 'img_dest')
 
 imageLabels = getImageLabels('img_dest')
+
+#ToDo
+# 1. Apply HOG, a higher level feature instead of using raw pixel values
+# 2. Apply PCA to reduce feture dimentions!, that will speed up training/testing!
+
+im = cv2.imread('img_dest/rock_1.jpg')
+extractHOG(im, 'config/hog')

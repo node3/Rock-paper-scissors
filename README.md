@@ -5,3 +5,6 @@
     Reads all images from img_src/rock/ dir, and generates various augmented images from it and places them in img_dest/{gesture}
     A single src image produces 384 augmented images
 
+
+
+![](https://github.com/atambol/Rock-paper-scissors-using-CV/blob/master/img_dest/none_400.jpg?raw=true)

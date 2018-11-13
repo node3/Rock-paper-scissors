@@ -1,5 +1,5 @@
 # USAGE
-# python ImagePreprosessing.py --image img_src/rock/
+# python ImagePreprosessing.py --image img_src
 
 def image_resize(image, width = None, height = None):
     # initialize the dimensions of the image to be resized and
@@ -120,9 +120,9 @@ def augmentImage(image):
 
     return images
 
-def saveImages(images, gestureName, targetDir):
+def saveImages(images, gestureName, targetDir, imageId):
     targetDirFullPath = os.path.join(os.getcwd(), targetDir)
-    imageId = 0
+
     for img in images:
         imageId += 1
         cv2.imwrite(os.path.join(targetDirFullPath, gestureName+'_'+str(imageId)+'.jpg'), img)
@@ -142,8 +142,10 @@ def getLabel(filename):
         label = ROCK
     elif 'paper' in filename:
         label = PAPER
-    else:
+    elif 'scissor' in filename:
         label = SCISSOR
+    else: label = NONE
+
     return label
 
 
@@ -169,19 +171,49 @@ import numpy as np
 import os
 from skimage.feature import hog
 
+NONE=0
 ROCK=1
 PAPER=2
 SCISSOR=3
+
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--imageDir", required=True, help="Path to input image directory")
 args = vars(ap.parse_args())
 
-srcImages = getImageList(args["imageDir"])
-for image in srcImages:
+rockSrcImages = getImageList(os.path.join(args["imageDir"], 'rock'))
+imageId = 0
+for image in rockSrcImages:
     transformedImage = transformImage(image, 300)
     images = augmentImage(transformedImage)
-    saveImages(images, 'rock', 'img_dest')
+    saveImages(images, 'rock', 'img_dest', imageId)
+    imageId += len(images)
+
+paperSrcImages = getImageList(os.path.join(args["imageDir"], 'paper'))
+imageId = 0
+for image in paperSrcImages:
+    transformedImage = transformImage(image, 300)
+    images = augmentImage(transformedImage)
+    saveImages(images, 'paper', 'img_dest', imageId)
+    imageId += len(images)
+
+scissorSrcImages = getImageList(os.path.join(args["imageDir"], 'scissor'))
+imageId = 0
+for image in scissorSrcImages:
+    transformedImage = transformImage(image, 300)
+    images = augmentImage(transformedImage)
+    saveImages(images, 'scissor', 'img_dest', imageId)
+    imageId += len(images)
+
+
+noneSrcImages = getImageList(os.path.join(args["imageDir"], 'none'))
+imageId = 0
+for image in noneSrcImages:
+    transformedImage = transformImage(image, 300)
+    images = augmentImage(transformedImage)
+    saveImages(images, 'none', 'img_dest', imageId)
+    imageId += len(images)
+
 
 imageLabels = getImageLabels('img_dest')
 

@@ -7,4 +7,4 @@
 
 
 
-![](https://github.com/atambol/Rock-paper-scissors-using-CV/blob/master/img_src/none/IMG_2.jpg?raw=true)
+![](https://github.com/atambol/Rock-paper-scissors-using-CV/blob/master/img_dest/none_400.jpg?raw=true)

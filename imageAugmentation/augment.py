@@ -10,6 +10,7 @@ inputDir = "./inputImages"
 outputDir = "./augmentedImages"
 gestures = ["Rock", "Paper", "Scissors"]
 
+# Transformation functions
 rotations = [
     [iaa.Affine(
         rotate=(0, 0),
@@ -52,23 +53,67 @@ rotations = [
     )]
 ]
 
+shears = [
+    [iaa.Affine(
+        shear=(-8, 8),
+    )],
+    [iaa.Affine(
+        shear=(-16, 16),
+    )],
+    [iaa.Affine(
+        shear=(-24, 24),
+    )],
+    # [iaa.Affine(
+    #     shear=(-30, 30),
+    # )],
+    # [iaa.Affine(
+    #     shear=(-36, 36),
+    # )],
+    # [iaa.Affine(
+    #     shear=(-42, 42),
+    # )],
+    # # [iaa.Affine(
+    #     shear=(-48, 48),
+    # )],
+    # [iaa.Affine(
+    #     shear=(-54, 54),
+    # )],
+    # [iaa.Affine(
+    #     shear=(-60, 60),
+    # )],
+    # [iaa.Affine(
+    #     shear=(-66, 66),
+    # )],
+    # [iaa.Affine(
+    #     shear=(-72, 72),
+    # )],
+    # [iaa.Affine(
+    #     shear=(-78, 78),
+    # )]
+]
+
 flip = [iaa.Fliplr(1)]
-    # iaa.Fliplr(1),
-    # iaa.Crop(percent=(0, 0.2)), 
+
+crop = [iaa.Crop(percent=(0, 0.2))]
+
+scale = [iaa.Affine(
+        scale={"x": (0.8, 1.2), "y": (0.8, 1.2)},
+        translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
+    )]
+
+# otherTransformations = [
+#     iaa.Crop(percent=(0, 0.2)), 
     # iaa.GaussianBlur(sigma=(0, 0.5)),
-    # iaa.Sometimes(0.5,
-        
-    # ),
     # iaa.ContrastNormalization((0.75, 1.5)),
     # iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.05*255), per_channel=0.5),
     # iaa.Multiply((0.8, 1.2), per_channel=0.2),
-    # iaa.Affine(
-    #     # scale={"x": (0.8, 1.2), "y": (0.8, 1.2)},
-    #     # translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
-    #     rotate=(-45, 45),
-    #     # shear=(-8, 8)
-    # ),
+#     iaa.Affine(
+#         scale={"x": (0.8, 1.2), "y": (0.8, 1.2)},
+#         translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
+#     ),
+# ]
 
+# Read images from the inputDir as black and white
 def readImages():
     print("Reading input images")
     allImages = {}
@@ -90,6 +135,7 @@ def readImages():
 
     return allImages
 
+# Write images after transformations
 def writeImages(augImages):
     print("Writing images")
     if isdir(outputDir):
@@ -104,7 +150,7 @@ def writeImages(augImages):
         total += count
     print("Created {} augmented images".format(total))
 
-
+# Perform transformations on the image based on the functions above
 def transformImages(images):
     print("Transforming images")     
     ia.seed(1)
@@ -117,17 +163,28 @@ def transformImages(images):
             seq = iaa.Sequential(rotation, random_order=True)
             augImages[gesture].extend(seq.augment_images(images[gesture]))
 
-        # save original images
+        # shear images      
+        # for shear in shears:
+        #     seq = iaa.Sequential(shear, random_order=True)
+        #     augImages[gesture].extend(seq.augment_images(augImages[gesture]))
+
         # flip images
         seq = iaa.Sequential(flip, random_order=True)
         augImages[gesture].extend(seq.augment_images(augImages[gesture]))
+
+        # Crop images
+        seq = iaa.Sequential(crop, random_order=True)
+        augImages[gesture].extend(seq.augment_images(augImages[gesture]))
+
+        # scale images
+        seq = iaa.Sequential(scale, random_order=True)
+        augImages[gesture].extend(seq.augment_images(augImages[gesture]))
     return augImages
 
-
+# main
 def main():
     images = readImages()
     augImages = transformImages(images)
     writeImages(augImages)
-
 
 main()

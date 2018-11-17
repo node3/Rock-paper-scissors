@@ -1,13 +1,32 @@
 import imgaug as ia
 from imgaug import augmenters as iaa
-from os import listdir
-from os.path import isfile, join
+from os import listdir, rmdir
+from os.path import isfile, join, isdir
 import imageio
 import shutil
+import numpy as np
 
 inputDir = "./inputImages"
 outputDir = "./augmentedImages"
 gestures = ["Rock", "Paper", "Scissors"]
+
+transformations = [
+    iaa.Fliplr(0.5),
+    # iaa.Crop(percent=(0, 0.1)), 
+    iaa.Crop(px=(0, 16)),
+    iaa.Sometimes(0.5,
+        iaa.GaussianBlur(sigma=(0, 0.5))
+    ),
+    iaa.ContrastNormalization((0.75, 1.5)),
+    iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.05*255), per_channel=0.5),
+    iaa.Multiply((0.8, 1.2), per_channel=0.2),
+    iaa.Affine(
+        scale={"x": (0.8, 1.2), "y": (0.8, 1.2)},
+        translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
+        rotate=(-25, 25),
+        shear=(-8, 8)
+    )
+]
 
 def readImages():
     print("Reading input images")
@@ -18,16 +37,22 @@ def readImages():
         images = []
         for f in listdir(Dir):
             filepath = join(Dir, f)
-            if isfile(filepath):
-                images.append(imageio.imread(filepath, pilmode="L"))
+            if isfile(filepath) and '.DS_Store' not in filepath:
+                print("Reading {}".format(filepath))
+                # Load in grayscale
+                bw = imageio.imread(filepath, pilmode="L")
+                # Convert to black and white
+                bw[bw < 128] = 0
+                bw[bw >= 128] = 255 
+                images.append(bw)
         allImages[gesture] = images
 
     return allImages
 
 def writeImages(augImages):
     print("Writing images")
-    if os.path.isdir(outputDir):
-        os.rmdir(outputDir)
+    if isdir(outputDir):
+        rmdir(outputDir)
     shutil.copytree(inputDir, outputDir)
     total = 0
     for gesture in gestures:
@@ -42,29 +67,10 @@ def transformImages(images):
     print("Transforming images")     
     ia.seed(1)
 
-    seq = iaa.Sequential([
-        iaa.Fliplr(0.5),
-        # iaa.Crop(percent=(0, 0.1)), 
-        iaa.Crop(px=(0, 16)),
-        iaa.Sometimes(0.5,
-            iaa.GaussianBlur(sigma=(0, 0.5))
-        ),
-        iaa.ContrastNormalization((0.75, 1.5)),
-        iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.05*255), per_channel=0.5),
-        iaa.Multiply((0.8, 1.2), per_channel=0.2),
-        iaa.Affine(
-            scale={"x": (0.8, 1.2), "y": (0.8, 1.2)},
-            translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
-            rotate=(-25, 25),
-            shear=(-8, 8)
-        )
-    ], random_order=True)
+    seq = iaa.Sequential(transformations, random_order=True)
 
     augImages = {}
     for gesture in gestures:
-        greScale = []
-        for images in images[gesture]:
-            bw = np.asarray(gray).copy()
         augImages[gesture] = seq.augment_images(images[gesture])
     return augImages
 

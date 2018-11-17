@@ -3,27 +3,49 @@ from imgaug import augmenters as iaa
 from os import listdir
 from os.path import isfile, join
 import imageio
+import shutil
 
-def readImages(directory, size=None, extract=None):
-    images = []
-    for f in listdir(directory):
-        filepath = join(directory, f)
-        if isfile(filepath):
-            images.append(imageio.imread(filepath, pilmode="RGB"))
-    return images
+inputDir = "./inputImages"
+outputDir = "./augmentedImages"
+gestures = ["Rock", "Paper", "Scissors"]
 
-def writeImages(images):
-    count = 0
-    for image in images:
-        imageio.imwrite('{}.jpg'.format(count), image)
-        count += 1
+def readImages():
+    print("Reading input images")
+    allImages = {}
+
+    for gesture in gestures:
+        Dir = join(inputDir, gesture)
+        images = []
+        for f in listdir(Dir):
+            filepath = join(Dir, f)
+            if isfile(filepath):
+                images.append(imageio.imread(filepath, pilmode="L"))
+        allImages[gesture] = images
+
+    return allImages
+
+def writeImages(augImages):
+    print("Writing images")
+    if os.path.isdir(outputDir):
+        os.rmdir(outputDir)
+    shutil.copytree(inputDir, outputDir)
+    total = 0
+    for gesture in gestures:
+        count = 0
+        for image in augImages[gesture]:
+            imageio.imwrite(join(outputDir, gesture, '{}.jpg'.format(count)), image)
+            count += 1
+        total += count
+    print("Created {} augmented images".format(total))
 
 def transformImages(images):
+    print("Transforming images")     
     ia.seed(1)
 
     seq = iaa.Sequential([
         iaa.Fliplr(0.5),
-        iaa.Crop(percent=(0, 0.1)), 
+        # iaa.Crop(percent=(0, 0.1)), 
+        iaa.Crop(px=(0, 16)),
         iaa.Sometimes(0.5,
             iaa.GaussianBlur(sigma=(0, 0.5))
         ),
@@ -38,10 +60,16 @@ def transformImages(images):
         )
     ], random_order=True)
 
-    return seq.augment_images(images)
+    augImages = {}
+    for gesture in gestures:
+        greScale = []
+        for images in images[gesture]:
+            bw = np.asarray(gray).copy()
+        augImages[gesture] = seq.augment_images(images[gesture])
+    return augImages
 
 def main():
-    images = readImages("./inputImages")
+    images = readImages()
     augImages = transformImages(images)
     writeImages(augImages)
 

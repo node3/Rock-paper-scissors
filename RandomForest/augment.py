@@ -11,34 +11,40 @@ import numpy as np
 rotations = [
     [iaa.Affine(
         rotate=(-30, 30),
+        cval=255
     )],
     [iaa.Affine(
         rotate=(-60, 60),
+        cval=255
     )],
     [iaa.Affine(
         rotate=(-90, 90),
+        cval=255
     )],
-    # [iaa.Affine(
-    #     rotate=(-120, 120),
-    # )],
+    [iaa.Affine(
+        rotate=(-120, 120),
+    )],
     # [iaa.Affine(
     #     rotate=(-150, 150),
     # )],
     [iaa.Affine(
         rotate=(-15, 15),
+        cval=255
     )],
     [iaa.Affine(
         rotate=(-45, 45),
+        cval=255
     )],
     [iaa.Affine(
         rotate=(-75, 75),
+        cval=255
     )],
-    # [iaa.Affine(
-    #     rotate=(-105, 105),
-    # )],
-    # [iaa.Affine(
-    #     rotate=(-135, 135),
-    # )],
+    [iaa.Affine(
+        rotate=(-105, 105),
+    )],
+    [iaa.Affine(
+        rotate=(-135, 135),
+    )],
     # [iaa.Affine(
     #     rotate=(-165, 165),
     # )],
@@ -50,28 +56,33 @@ rotations = [
 shears = [
     [iaa.Affine(
         shear=(-8, 8),
+        cval=255
     )],
     [iaa.Affine(
         shear=(-16, 16),
+        cval=255
     )],
     [iaa.Affine(
         shear=(-24, 24),
+        cval=255
     )],
     [iaa.Affine(
         shear=(-30, 30),
+        cval=255
     )],
     [iaa.Affine(
         shear=(-36, 36),
+        cval=255
     )],
-    # [iaa.Affine(
-    #     shear=(-42, 42),
-    # )],
-    # # [iaa.Affine(
-    #     shear=(-48, 48),
-    # )],
-    # [iaa.Affine(
-    #     shear=(-54, 54),
-    # )],
+    [iaa.Affine(
+        shear=(-42, 42),
+    )],
+    [iaa.Affine(
+        shear=(-48, 48),
+    )],
+    [iaa.Affine(
+        shear=(-54, 54),
+    )],
     # [iaa.Affine(
     #     shear=(-60, 60),
     # )],
@@ -93,6 +104,7 @@ crop = [iaa.Crop(percent=(0, 0.2))]
 scale = [iaa.Affine(
         scale={"x": (0.8, 1.2), "y": (0.8, 1.2)},
         translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
+        cval=255
     )]
 
 # otherTransformations = [

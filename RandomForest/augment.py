@@ -20,12 +20,12 @@ rotations = [
     [iaa.Affine(
         rotate=(-90, 90),
     )],
-    [iaa.Affine(
-        rotate=(-120, 120),
-    )],
-    [iaa.Affine(
-        rotate=(-150, 150),
-    )],
+    # [iaa.Affine(
+    #     rotate=(-120, 120),
+    # )],
+    # [iaa.Affine(
+    #     rotate=(-150, 150),
+    # )],
     [iaa.Affine(
         rotate=(-15, 15),
     )],
@@ -35,18 +35,18 @@ rotations = [
     [iaa.Affine(
         rotate=(-75, 75),
     )],
-    [iaa.Affine(
-        rotate=(-105, 105),
-    )],
-    [iaa.Affine(
-        rotate=(-135, 135),
-    )],
-    [iaa.Affine(
-        rotate=(-165, 165),
-    )],
-    [iaa.Affine(
-        rotate=(-180, 180),
-    )]
+    # [iaa.Affine(
+    #     rotate=(-105, 105),
+    # )],
+    # [iaa.Affine(
+    #     rotate=(-135, 135),
+    # )],
+    # [iaa.Affine(
+    #     rotate=(-165, 165),
+    # )],
+    # [iaa.Affine(
+    #     rotate=(-180, 180),
+    # )]
 ]
 
 shears = [

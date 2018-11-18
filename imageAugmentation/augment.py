@@ -1,14 +1,10 @@
 import imgaug as ia
 from imgaug import augmenters as iaa
-from os import listdir
+from os import listdir, mkdir
 from os.path import isfile, join, isdir
 import imageio
 import shutil
 import numpy as np
-
-inputDir = "./inputImages"
-outputDir = "./augmentedImages"
-gestures = ["Rock", "Paper", "Scissors"]
 
 # Transformation functions
 rotations = [
@@ -63,15 +59,15 @@ shears = [
     [iaa.Affine(
         shear=(-24, 24),
     )],
-    # [iaa.Affine(
-    #     shear=(-30, 30),
-    # )],
-    # [iaa.Affine(
-    #     shear=(-36, 36),
-    # )],
-    # [iaa.Affine(
-    #     shear=(-42, 42),
-    # )],
+    [iaa.Affine(
+        shear=(-30, 30),
+    )],
+    [iaa.Affine(
+        shear=(-36, 36),
+    )],
+    [iaa.Affine(
+        shear=(-42, 42),
+    )],
     # # [iaa.Affine(
     #     shear=(-48, 48),
     # )],
@@ -114,77 +110,87 @@ scale = [iaa.Affine(
 # ]
 
 # Read images from the inputDir as black and white
-def readImages():
-    print("Reading input images")
+def readImages(gesDir):
+    print("Reading input images from {}".format(gesDir))
     allImages = {}
 
-    for gesture in gestures:
-        Dir = join(inputDir, gesture)
-        images = []
-        for f in listdir(Dir):
-            filepath = join(Dir, f)
-            if isfile(filepath) and '.DS_Store' not in filepath:
-                print("Reading {}".format(filepath))
-                # Load in grayscale
-                bw = imageio.imread(filepath, pilmode="L")
-                # Convert to black and white
-                bw[bw < 128] = 0
-                bw[bw >= 128] = 255 
-                images.append(bw)
-        allImages[gesture] = images
+    images = []
+    for f in listdir(gesDir):
+        filepath = join(gesDir, f)
+        if isfile(filepath) and '.DS_Store' not in filepath:
+            print("Reading {}".format(filepath))
+            # Load in grayscale
+            bw = imageio.imread(filepath, pilmode="L")
+            # Convert to black and white
+            bw[bw < 128] = 0
+            bw[bw >= 128] = 255 
+            images.append(bw)
 
-    return allImages
+    return images
 
 # Write images after transformations
-def writeImages(augImages):
-    print("Writing images")
-    if isdir(outputDir):
-        shutil.rmtree(outputDir)
-    shutil.copytree(inputDir, outputDir)
-    total = 0
-    for gesture in gestures:
-        count = 0
-        for image in augImages[gesture]:
-            imageio.imwrite(join(outputDir, gesture, '{}.jpg'.format(count)), image)
-            count += 1
-        total += count
-    print("Created {} augmented images".format(total))
+def writeImages(augImages, gesDir):
+    print("Writing images to {}".format(gesDir))
+    count = 0
+    for image in augImages:
+        imageio.imwrite(join(gesDir, '{}.jpg'.format(count)), image)
+        count += 1
+    return count
+    
 
 # Perform transformations on the image based on the functions above
 def transformImages(images):
     print("Transforming images")     
     ia.seed(1)
 
-    augImages = {}
-    for gesture in gestures:
-        augImages[gesture] = []
-        # Rotate the images
-        for rotation in rotations:
-            seq = iaa.Sequential(rotation, random_order=True)
-            augImages[gesture].extend(seq.augment_images(images[gesture]))
+    augImages = []
+    # Rotate the images
+    for rotation in rotations:
+        seq = iaa.Sequential(rotation, random_order=True)
+        augImages.extend(seq.augment_images(images))
 
-        # shear images      
-        # for shear in shears:
-        #     seq = iaa.Sequential(shear, random_order=True)
-        #     augImages[gesture].extend(seq.augment_images(augImages[gesture]))
+    # shear images      
+    for shear in shears:
+        seq = iaa.Sequential(shear, random_order=True)
+        augImages.extend(seq.augment_images(augImages))
 
-        # flip images
-        seq = iaa.Sequential(flip, random_order=True)
-        augImages[gesture].extend(seq.augment_images(augImages[gesture]))
+    # flip images
+    seq = iaa.Sequential(flip, random_order=True)
+    augImages.extend(seq.augment_images(augImages))
 
-        # Crop images
-        seq = iaa.Sequential(crop, random_order=True)
-        augImages[gesture].extend(seq.augment_images(augImages[gesture]))
+    # Crop images
+    seq = iaa.Sequential(crop, random_order=True)
+    augImages.extend(seq.augment_images(augImages))
 
-        # scale images
-        seq = iaa.Sequential(scale, random_order=True)
-        augImages[gesture].extend(seq.augment_images(augImages[gesture]))
+    # scale images
+    seq = iaa.Sequential(scale, random_order=True)
+    augImages.extend(seq.augment_images(augImages))
     return augImages
 
 # main
 def main():
-    images = readImages()
-    augImages = transformImages(images)
-    writeImages(augImages)
+    inputDir = "./inputImages"
+    outputDir = "./augmentedImages"
+    gestures = ["Rock", "Paper", "Scissors"]
+
+    # remove outputDir if it exists
+    if isdir(outputDir):
+        shutil.rmtree(outputDir)
+    mkdir(outputDir)
+    # shutil.copytree(inputDir, outputDir) # to save original images as well
+
+    # process for each gesture
+    count = 0
+    for gesture in gestures:
+        igesDir = join(inputDir, gesture)
+        ogesDir = join(outputDir, gesture)
+        mkdir(ogesDir)
+
+        # read, transform and write
+        images = readImages(igesDir)
+        augImages = transformImages(images)
+        count += writeImages(augImages, ogesDir)
+        
+    print("Total images created : {}".format(count))
 
 main()

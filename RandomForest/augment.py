@@ -23,10 +23,12 @@ rotations = [
     )],
     [iaa.Affine(
         rotate=(-120, 120),
+        cval=255
     )],
-    # [iaa.Affine(
-    #     rotate=(-150, 150),
-    # )],
+    [iaa.Affine(
+        rotate=(-150, 150),
+        cval=255
+    )],
     [iaa.Affine(
         rotate=(-15, 15),
         cval=255
@@ -41,29 +43,29 @@ rotations = [
     )],
     [iaa.Affine(
         rotate=(-105, 105),
+        cval=255
     )],
     [iaa.Affine(
         rotate=(-135, 135),
+        cval=255
     )],
-    # [iaa.Affine(
-    #     rotate=(-165, 165),
-    # )],
-    # [iaa.Affine(
-    #     rotate=(-180, 180),
-    # )]
+    [iaa.Affine(
+        rotate=(-165, 165),
+        cval=255
+    )],
+    [iaa.Affine(
+        rotate=(-180, 180),
+        cval=255
+    )]
 ]
 
 shears = [
     [iaa.Affine(
-        shear=(-8, 8),
+        shear=(-10, 10),
         cval=255
     )],
     [iaa.Affine(
-        shear=(-16, 16),
-        cval=255
-    )],
-    [iaa.Affine(
-        shear=(-24, 24),
+        shear=(-20, 20),
         cval=255
     )],
     [iaa.Affine(
@@ -71,18 +73,25 @@ shears = [
         cval=255
     )],
     [iaa.Affine(
-        shear=(-36, 36),
+        shear=(-40, 40),
         cval=255
     )],
     [iaa.Affine(
-        shear=(-42, 42),
+        shear=(-50, 50),
+        cval=255
     )],
-    [iaa.Affine(
-        shear=(-48, 48),
-    )],
-    [iaa.Affine(
-        shear=(-54, 54),
-    )],
+    # [iaa.Affine(
+    #     shear=(-60, 60),
+    #     cval=255
+    # )],
+    # [iaa.Affine(
+    #     shear=(-48, 48),
+    #     cval=255
+    # )],
+    # [iaa.Affine(
+    #     shear=(-54, 54),
+    #     cval=255
+    # )],
     # [iaa.Affine(
     #     shear=(-60, 60),
     # )],

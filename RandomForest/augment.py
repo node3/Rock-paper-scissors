@@ -4,13 +4,11 @@ from os import listdir, mkdir
 from os.path import isfile, join, isdir
 import imageio
 import shutil
+import cv2
 import numpy as np
 
 # Transformation functions
 rotations = [
-    [iaa.Affine(
-        rotate=(0, 0),
-    )],
     [iaa.Affine(
         rotate=(-30, 30),
     )],
@@ -120,11 +118,18 @@ def readImages(gesDir):
         if isfile(filepath) and '.DS_Store' not in filepath:
             print("Reading {}".format(filepath))
             # Load in grayscale
-            bw = imageio.imread(filepath, pilmode="L")
+            image = imageio.imread(filepath, pilmode="RGB")
             # Convert to black and white
-            bw[bw < 128] = 0
-            bw[bw >= 128] = 255 
-            images.append(bw)
+            # bw[bw < 128] = 0
+            # bw[bw >= 128] = 255
+            dim = (200, 200)
+            image = cv2.resize(image, dim)
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            blur = cv2.GaussianBlur(gray, (5, 5), 2)
+            th3 = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+            ret, res = cv2.threshold(th3, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+            images.append(res)
 
     return images
 
@@ -144,12 +149,12 @@ def transformImages(images):
     ia.seed(1)
 
     augImages = []
-    # Rotate the images
+    #Rotate the images
     for rotation in rotations:
         seq = iaa.Sequential(rotation, random_order=True)
         augImages.extend(seq.augment_images(images))
 
-    # shear images      
+    # shear images
     for shear in shears:
         seq = iaa.Sequential(shear, random_order=True)
         augImages.extend(seq.augment_images(augImages))

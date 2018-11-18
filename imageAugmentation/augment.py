@@ -65,9 +65,9 @@ shears = [
     [iaa.Affine(
         shear=(-36, 36),
     )],
-    [iaa.Affine(
-        shear=(-42, 42),
-    )],
+    # [iaa.Affine(
+    #     shear=(-42, 42),
+    # )],
     # # [iaa.Affine(
     #     shear=(-48, 48),
     # )],

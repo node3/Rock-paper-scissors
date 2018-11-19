@@ -205,7 +205,7 @@ for image in scissorSrcImages:
     saveImages(images, 'scissor', 'img_dest', imageId)
     imageId += len(images)
 
-
+'''
 noneSrcImages = getImageList(os.path.join(args["imageDir"], 'none'))
 imageId = 0
 for image in noneSrcImages:
@@ -214,6 +214,7 @@ for image in noneSrcImages:
     saveImages(images, 'none', 'img_dest', imageId)
     imageId += len(images)
 
+'''
 
 imageLabels = getImageLabels('img_dest')
 

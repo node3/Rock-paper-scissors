@@ -34,7 +34,7 @@ for gesture in gestures:
 
 # random forest
 x_train, x_test, y_train, y_test = train_test_split(df_x, df_y, test_size=0.2, random_state=4)
-rf = RandomForestClassifier(n_estimators=500)
+rf = RandomForestClassifier(n_estimators=1500)
 rf.fit(x_train, y_train)
 print("Classifier generated")
 
@@ -44,8 +44,8 @@ pred = rf.predict(x_test)
 for i in range(len(pred)):
     if pred[i] == y_test[i]:
         count += 1
-print(pred)
-print(y_test)
+# print(pred)
+# print(y_test)
 print("prediction = {}".format(100*float(count)/float(len(pred))))
 
 

@@ -1,4 +1,4 @@
-# Rock-paper-scissors-using-CV
+# Rock-paper-scissors
 
 ## Preprocessing:
 ### python ImagePreprosessing.py --image img_src/rock/
